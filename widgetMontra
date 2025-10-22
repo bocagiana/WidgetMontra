@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setúbal - Tempo e Hora</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Configuração de estilo personalizada para o widget -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+        :root {
+            --widget-width: 400px;
+            --widget-height: 120px;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f3f4f6;
+        }
+        .widget-container {
+            width: var(--widget-width);
+            height: var(--widget-height);
+            font-family: 'Inter', sans-serif;
+            background-color: #000000; /* Fundo Negro */
+            color: #ffffff; /* Texto Branco */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            padding: 1rem;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        /* Estilo para a hora - grande e centralizada */
+        #current-time {
+            font-size: 3.5rem; /* Tamanho da fonte grande para a hora */
+            font-weight: 700;
+            letter-spacing: -2px;
+            line-height: 1;
+        }
+        /* Estilo para as informações do clima */
+        #weather-info {
+            font-size: 0.8rem;
+        }
+        .weather-icon {
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- O Container do Widget -->
+    <div class="widget-container">
+        <!-- Coluna da Hora e Data -->
+        <div class="flex flex-col justify-center items-start w-3/5">
+            <div id="city-name" class="text-xs font-light text-gray-400">SETÚBAL, PORTUGAL</div>
+            <div id="current-time"></div>
+            <div id="current-date" class="text-sm font-normal text-gray-300"></div>
+        </div>
+
+        <!-- Coluna do Clima -->
+        <div class="flex flex-col justify-center items-end w-2/5">
+            <!-- Temperatura Atual (Estática baseada na pesquisa - 21°C e Parcialmente Nublado) -->
+            <div class="flex items-center mb-1">
+                <span class="weather-icon">☁️</span> <!-- Ícone de nuvem para parcialmente nublado -->
+                <span class="text-3xl font-bold">21°C</span>
+            </div>
+            <div id="weather-description" class="text-sm text-gray-300">Parcialmente Nublado</div>
+            <div id="weather-details" class="text-xs font-light text-gray-400">Vento: 13 km/h</div>
+        </div>
+    </div>
+
+    <script>
+        // Função para atualizar o relógio
+        function updateClock() {
+            const now = new Date();
+
+            // Configuração para Setúbal (Lisboa timezone, o mesmo que Setúbal)
+            const optionsTime = { 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                // Segundos foram removidos a pedido do utilizador
+                hour12: false, 
+                timeZone: 'Europe/Lisbon' 
+            };
+            const optionsDate = { 
+                weekday: 'long', 
+                day: 'numeric', 
+                month: 'long', 
+                timeZone: 'Europe/Lisbon' 
+            };
+
+            const timeString = now.toLocaleTimeString('pt-PT', optionsTime);
+            const dateString = now.toLocaleDateString('pt-PT', optionsDate)
+                                  .replace(/(^|\s)\w/g, c => c.toUpperCase()); // Capitaliza as primeiras letras
+
+            document.getElementById('current-time').textContent = timeString;
+            document.getElementById('current-date').textContent = dateString;
+        }
+
+        // Inicializa o relógio e define o intervalo de atualização (a cada segundo)
+        updateClock();
+        setInterval(updateClock, 1000);
+
+        // Otimização para dispositivos móveis (o layout já é responsivo, mas ajustamos a altura)
+        window.addEventListener('resize', () => {
+            const container = document.querySelector('.widget-container');
+            if (window.innerWidth < 450) {
+                // Em telas muito pequenas, o widget pode expandir
+                container.style.width = '90vw';
+                container.style.height = 'auto'; // Altura automática
+                document.getElementById('current-time').style.fontSize = '2.5rem';
+            } else {
+                // Volta para o tamanho fixo em telas maiores
+                container.style.width = 'var(--widget-width)';
+                container.style.height = 'var(--widget-height)';
+                document.getElementById('current-time').style.fontSize = '3.5rem';
+            }
+        });
+        
+        // Dispara o evento de resize na carga inicial para aplicar a lógica móvel, se necessário
+        window.dispatchEvent(new Event('resize'));
+        
+    </script>
+
+</body>
+</html>
